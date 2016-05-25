@@ -25,8 +25,17 @@ class SpaceNav extends React.Component {
       // ws.on('open', () => console.log('open'));
 
       ws.addEventListener('message', (msg) => {
-        const data = JSON.parse(msg.data);
-        this.props.cursor.merge(data.spaceNav);
+        const {translate, rotate} = JSON.parse(msg.data).spaceNav;
+
+        if(translate) {
+          const {x, y, z} = translate;
+          this.props.cursor.refine('translate').set(V3(-x, y, -z));
+        }
+
+        if(rotate) {
+          const {x, y, z} = rotate;
+          this.props.cursor.refine('rotate').set(V3(x * -15, y * 15, z * -15));
+        }
       });
     } catch (err) {
       console.log(err);
