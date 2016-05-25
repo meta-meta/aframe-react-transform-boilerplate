@@ -20,15 +20,13 @@ export default {
     },
   },
   spaceNav: {
-    translate: {
-      x: 0,
-      y: 0,
-      z: 0
-    },
-    rotate: {
-      x: 0,
-      y: 0,
-      z: 0
-    }    
+    translate: V3(),
+    rotate: V3(),    
+    translateMode: 'WORLD',
+  },
+  box: {
+    object3DId: undefined,
+    position: V3(),
+    rotation: V3(),
   }
 };

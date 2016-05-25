@@ -1,19 +1,44 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import 'aframe';
 import './util/shorthand';
 import {Scene, Entity} from 'aframe-react';
 import Camera from './components/Camera';
-import Image from './components/Image';
 import Sky from './components/Sky';
-import Text from './components/Text';
 import Box from './components/Box';
 import LeapMotion from './components/LeapMotion';
 import SpaceNav from './components/SpaceNav';
+import _ from 'lodash';
 
-import {Cursor} from 'react-cursor';
+const WORLD = 'WORLD';
+const LOCAL = 'LOCAL';
 
 export class App extends Component {
+  onTick = (t, dt) => {
+    const {cursor} = this.props;
+    cursor.refine('time').set({t, dt});
+
+    const {translate, rotate, translateMode} = cursor.refine('spaceNav').value();
+
+    const boxCur = cursor.refine('box');
+    const posCur = boxCur.refine('position');
+    const rotCur = boxCur.refine('rotation');
+
+    const boxObj = this.scene.getObjectById(boxCur.refine('object3DId').value());
+
+    const nextBoxPos = {
+      [LOCAL]: () => {
+        boxObj.translateX(translate.x);
+        boxObj.translateY(translate.y);
+        boxObj.translateZ(translate.z);
+        return boxObj.position.clone();
+      },
+      [WORLD]: () => posCur.value().clone().add(translate),
+    }[translateMode]();
+
+    posCur.set(nextBoxPos);
+    rotCur.set(rotCur.value().clone().add(rotate));
+  };
+
   render() {
     const {cursor} = this.props;
     const leapCur = cursor.refine('leapMotion');
@@ -22,8 +47,11 @@ export class App extends Component {
     const trans = spaceNavCur.refine('translate').value();
     const rot = spaceNavCur.refine('rotate').value();
 
+    const boxCur = cursor.refine('box');
+
     return (
-      <Scene onTick={(t, dt) => cursor.refine('time').set({t, dt})}
+      <Scene onLoaded={evt => {this.scene = evt.target.sceneEl.object3D;}}
+             onTick={this.onTick}
              onEnterVR={() => {leapCur.refine('isVR').set(true);}}
              onExitVR={() => {leapCur.refine('isVR').set(false);}}
       >
@@ -33,13 +61,16 @@ export class App extends Component {
           <LeapMotion cursor={leapCur} />
 
           <Entity position="-3 -2 -5">
-            <Box position={`${-trans.x} ${trans.y} ${-trans.z}`} rotation={`${rot.x * -90} ${rot.y * 90} ${rot.z * -90}`}/>
+            <Box position={trans.toAframeString()} rotation={rot.toAframeString()}/>
           </Entity>
 
         </Camera>
 
-
-
+        <Entity position="0 0 -10">
+          <Box onLoaded={evt => boxCur.refine('object3DId').set(evt.target.object3D.id)}
+               position={boxCur.refine('position').value().toAframeString()}
+               rotation={boxCur.refine('rotation').value().toAframeString()}/>
+        </Entity>
 
         <Sky/>
 
