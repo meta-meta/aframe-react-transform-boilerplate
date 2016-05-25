@@ -8,7 +8,7 @@ import initialState from './initialState';
 window.stateAtom = atom.createAtom(initialState);
 
 const queueRender = (key, ref, prevVal, curVal) => {
-  var cur = Cursor.build(stateAtom.deref(), stateAtom.swap);
+  var cur = window.cursor = Cursor.build(stateAtom.deref(), stateAtom.swap);
   window.app = render(<App cursor={cur}/>, document.getElementById('root'));
 };
 
