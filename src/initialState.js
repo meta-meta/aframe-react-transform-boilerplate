@@ -1,4 +1,5 @@
 export default {
+  time: {},
   leapMotion: {
     isVR: false,
     left: {
@@ -18,4 +19,16 @@ export default {
       pinchStrength: 0,
     },
   },
+  spaceNav: {
+    translate: {
+      x: 0,
+      y: 0,
+      z: 0
+    },
+    rotate: {
+      x: 0,
+      y: 0,
+      z: 0
+    }    
+  }
 };
