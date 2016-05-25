@@ -13,4 +13,12 @@ class Box extends React.Component {
     }
 }
 
+Box.defaultProps = {
+    width: 1,
+    height: 1,
+    depth: 1,
+    color: "#666",
+    opacity: 1,
+};
+
 export default Box;
