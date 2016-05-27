@@ -11,6 +11,7 @@ import _ from 'lodash';
 class SpaceNav extends React.Component {
   static propTypes = {
     cursor: PropTypes.instanceOf(Cursor),
+    wintabCur: PropTypes.instanceOf(Cursor),
   };
 
   componentDidMount() {
@@ -25,16 +26,26 @@ class SpaceNav extends React.Component {
       // ws.on('open', () => console.log('open'));
 
       ws.addEventListener('message', (msg) => {
-        const {translate, rotate} = JSON.parse(msg.data).spaceNav;
+        const data = JSON.parse(msg.data);
 
-        if(translate) {
-          const {x, y, z} = translate;
-          this.props.cursor.refine('translate').set(V3(-x, y, -z));
+        const {wintab, spaceNav} = data;
+
+        if(spaceNav) {
+          const {translate, rotate} = spaceNav;
+
+          if(translate) {
+            const {x, y, z} = translate;
+            this.props.cursor.refine('translate').set(V3(-x, y, -z));
+          }
+
+          if(rotate) {
+            const {x, y, z} = rotate;
+            this.props.cursor.refine('rotate').set(V3(x * -15, y * 15, z * -15));
+          }
         }
 
-        if(rotate) {
-          const {x, y, z} = rotate;
-          this.props.cursor.refine('rotate').set(V3(x * -15, y * 15, z * -15));
+        if(wintab) {
+          this.props.wintabCur.set(wintab);
         }
       });
     } catch (err) {

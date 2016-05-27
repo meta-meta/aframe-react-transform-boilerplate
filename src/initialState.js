@@ -24,6 +24,14 @@ export default {
     rotate: V3(),    
     translateMode: 'WORLD',
   },
+  wintab: {
+    x: 0,
+    y: 0,
+    pressure: null,
+    azimuth: 0,
+    altitude: 0,
+    isEraser: false,
+  },
   box: {
     object3DId: undefined,
     position: V3(),
