@@ -5,6 +5,7 @@ import {Scene, Entity} from 'aframe-react';
 import Camera from './components/Camera';
 import Sky from './components/Sky';
 import Box from './components/Box';
+import Plane from './components/Plane';
 import LeapMotion from './components/LeapMotion';
 import SpaceNav from './components/SpaceNav';
 import _ from 'lodash';
@@ -18,33 +19,74 @@ export class App extends Component {
     const {cursor} = this.props;
     cursor.refine('time').set({t, dt});
 
-    const {translate, rotate, translateMode} = cursor.refine('spaceNav').value();
+    const {selectedCursorPath, spaceNav} = cursor.value();
 
-    const boxCur = cursor.refine('box');
-    const posCur = boxCur.refine('position');
-    const rotCur = boxCur.refine('rotation');
+    const {translate, rotate, translateMode, speed} = spaceNav;
 
-    const boxObj = this.scene.getObjectById(boxCur.refine('object3DId').value());
+    if(selectedCursorPath) {
+      const selectedObjCur = cursor.refine.apply(null, selectedCursorPath);
+      const posCur = selectedObjCur.refine('props', 'position');
+      const rotCur = selectedObjCur.refine('props', 'rotation');
 
-    const nextBoxPos = {
-      [LOCAL]: () => {
-        boxObj.translateX(translate.x);
-        boxObj.translateY(translate.y);
-        boxObj.translateZ(translate.z);
-        return boxObj.position.clone();
-      },
-      [WORLD]: () => posCur.value().clone().add(translate),
-    }[translateMode]();
+      const selectedObj = this.scene.getObjectById(selectedObjCur.refine('object3DId').value());
 
-    posCur.set(nextBoxPos);
-    rotCur.set(rotCur.value().clone().add(rotate));
+      const nextBoxPos = {
+        [LOCAL]: () => {
+          selectedObj.translateX(translate.x * speed);
+          selectedObj.translateY(translate.y * speed);
+          selectedObj.translateZ(translate.z * speed);
+          return selectedObj.position.clone();
+        },
+        [WORLD]: () => posCur.value().clone().add(translate.clone().multiplyScalar(speed)),
+      }[translateMode]();
+
+      posCur.set(nextBoxPos);
+      rotCur.set(rotCur.value().clone().add(rotate.clone().multiplyScalar(speed)));
+    }
+
   };
+
+  constructor() {
+    super();
+    this.components = {
+      Plane
+    };
+  }
+
+  loadPanelsFromJSON = json => this.props.cursor.refine('panel').set(JSON.parse(json, (key, val) => {
+    if(key === 'position' || key === 'rotation') {
+      return objToV3(val);
+    }
+    return val;
+  }));
+
+  storeComponentObject3DId = (evt, id) => this.props.cursor.refine('panel', id).merge({object3DId: evt.target.object3D.id});
+
+  spawnComponent = (type) => {
+    const id = _.uniqueId();
+
+    this.props.cursor.refine('panel').merge({
+      [id]: {
+        id,
+        type,
+        props: {
+          position: V3(),
+          rotation: V3(),
+          onLoaded: evt => this.storeComponentObject3DId(evt, id),
+        }
+      }
+    });
+
+  };
+  
+  spawnPlane = () => this.spawnComponent('Plane');
 
   render() {
     const {cursor} = this.props;
     const leapCur = cursor.refine('leapMotion');
     const spaceNavCur = cursor.refine('spaceNav');
     const wintabCur = cursor.refine('wintab');
+    const {panel} = cursor.value();
 
     const trans = spaceNavCur.refine('translate').value();
     const rot = spaceNavCur.refine('rotate').value();
@@ -88,7 +130,28 @@ export class App extends Component {
 
         </Entity>
 
+        {/*Panel from editor state*/}
+        <Entity position="0 0 -5">
+          {
+            _.map(panel, (cmp, key) =>
+              React.createElement(this.components[cmp.type], _.extend({}, cmp.props, {key}))
+            )
+          }
+        </Entity>
+
         <Sky/>
+
+        <div style={{
+          width: '100%',
+          height: 50,
+          background: '#666',
+          position: 'absolute',
+          bottom: 0,
+          zIndex: 1,
+        }}>
+          <button onClick={this.spawnPlane} >Plane</button>
+          <input type="text" placeholder="paste panel JSON" onChange={evt => this.loadPanelsFromJSON(evt.target.value)}></input>
+        </div>
 
       </Scene>
     );

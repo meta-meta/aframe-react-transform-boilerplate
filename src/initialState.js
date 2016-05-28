@@ -1,5 +1,6 @@
 export default {
   time: {},
+  selectedCursorPath: undefined,
   leapMotion: {
     isVR: false,
     left: {
@@ -23,6 +24,7 @@ export default {
     translate: V3(),
     rotate: V3(),    
     translateMode: 'WORLD',
+    speed: 0.2,
   },
   wintab: {
     x: 0,
@@ -36,5 +38,6 @@ export default {
     object3DId: undefined,
     position: V3(),
     rotation: V3(),
-  }
+  },
+  panel: {}
 };
