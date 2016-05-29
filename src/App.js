@@ -4,6 +4,7 @@ import './util/shorthand';
 import {Scene, Entity} from 'aframe-react';
 import Camera from './components/Camera';
 import Sky from './components/Sky';
+import ComponentEditor from './components/ComponentEditor';
 import Box from './components/Box';
 import Plane from './components/Plane';
 import LeapMotion from './components/LeapMotion';
@@ -19,12 +20,12 @@ export class App extends Component {
     const {cursor} = this.props;
     cursor.refine('time').set({t, dt});
 
-    const {selectedCursorPath, spaceNav} = cursor.value();
-
+    const {spaceNav} = cursor.value();
     const {translate, rotate, translateMode, speed} = spaceNav;
 
-    if(selectedCursorPath) {
-      const selectedObjCur = cursor.refine.apply(null, selectedCursorPath);
+    const selectedObjCur = this.getSelectedCmpCursor();
+    
+    if(selectedObjCur) {      
       const posCur = selectedObjCur.refine('props', 'position');
       const rotCur = selectedObjCur.refine('props', 'rotation');
 
@@ -52,6 +53,11 @@ export class App extends Component {
       Plane
     };
   }
+  
+  getSelectedCmpCursor = () => {
+    const {selectedCursorPath} = this.props.cursor.value();
+    return selectedCursorPath && this.props.cursor.refine.apply(null, selectedCursorPath);
+  };
 
   loadPanelsFromJSON = json => this.props.cursor.refine('panel').set(JSON.parse(json, (key, val) => {
     if(key === 'position' || key === 'rotation') {
@@ -72,6 +78,7 @@ export class App extends Component {
         props: {
           position: V3(),
           rotation: V3(),
+          color: '#ffffff',
           onLoaded: evt => this.storeComponentObject3DId(evt, id),
         }
       }
@@ -94,6 +101,7 @@ export class App extends Component {
     const boxCur = cursor.refine('box');
 
     const {x, y, pressure, azimuth, altitude, isEraser} = wintabCur.value();
+    const selectedCmpCur = this.getSelectedCmpCursor();
 
     return (
       <Scene onLoaded={evt => {this.scene = evt.target.sceneEl.object3D;}}
@@ -152,6 +160,11 @@ export class App extends Component {
           <button onClick={this.spawnPlane} >Plane</button>
           <input type="text" placeholder="paste panel JSON" onChange={evt => this.loadPanelsFromJSON(evt.target.value)}></input>
         </div>
+
+        {
+          selectedCmpCur ? <ComponentEditor selectedComponentCursor={selectedCmpCur}/> : null
+        }
+
 
       </Scene>
     );
