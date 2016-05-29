@@ -2,24 +2,46 @@ import React from 'react';
 import _ from 'lodash';
 
 class ComponentEditor extends React.Component {
+  
+  
   render() {
-    const {selectedComponentCursor} = this.props;
-    const selectedCmp = selectedComponentCursor && selectedComponentCursor.value() || {};
+    const {selectedComponentCursor: cur} = this.props;
+    const selectedCmp = cur.value();
+    
+    const propTypes = registeredComponents[selectedCmp.type].propTypes;
 
-    const renderProp = (prop, propName) => {
-      const objectProp = prop => (
+    const renderProp = (cur, prop, propName, propType) => {
+      const objectProp = (cur, prop, propTypes) => (
         <ul>
-          {_.map(prop, (val, key) => <li>{key}: {renderProp(val)}</li>)}
+          {_.map(prop, (val, key) => <li>{key}: {renderProp(cur.refine(key), val, ''/*avoid nested propname false match*/, propTypes[key])}</li>)}
         </ul>
       );
 
+      const onChange = evt => {
+        let {value} = evt.target;
+
+        if(React.PropTypes.number === propType) {
+          value = parseFloat(evt.target.value);
+        }
+
+        if(value) {
+          cur.set(value);
+        }
+      };
+
       const propRenderer = {
-        color: () => <input type="color" value={prop}/> //<ColorPicker prop={prop}/>,
+        color: () => <input type="color" value={prop} onChange={onChange}/>
       }[propName];
 
+      const v3PropTypes = {
+        x: React.PropTypes.number,
+        y: React.PropTypes.number,
+        z: React.PropTypes.number,
+      };
+
       return propRenderer ? propRenderer()
-        : _.isObject(prop) ? objectProp(prop)
-        : <input type="text" value={prop} />
+        : _.isObject(prop) ? objectProp(cur, prop, window.v3Prop === propType ? v3PropTypes : {})
+        : <input type="text" value={prop} onChange={onChange}/>
     };
 
     return (
@@ -33,7 +55,9 @@ class ComponentEditor extends React.Component {
         }}>
         <h1>Component Id: {selectedCmp.id}</h1>
         <ul>
-          {_.map(_.omit(selectedCmp.props, ['onLoaded']), (prop, key) => <li>{key}: {renderProp(prop, key)}</li>)}
+          {_.map(_.omit(selectedCmp.props, ['onLoaded']), (prop, propName) => <li>{propName}: {
+            renderProp(cur.refine('props', propName), prop, propName, propTypes && propTypes[propName])
+          }</li>)}
         </ul>
       </div>
     );

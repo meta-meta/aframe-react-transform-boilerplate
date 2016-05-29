@@ -49,7 +49,7 @@ export class App extends Component {
 
   constructor() {
     super();
-    this.components = {
+    window.registeredComponents = {
       Plane
     };
   }
@@ -142,7 +142,7 @@ export class App extends Component {
         <Entity position="0 0 -5">
           {
             _.map(panel, (cmp, key) =>
-              React.createElement(this.components[cmp.type], _.extend({}, cmp.props, {key}))
+              React.createElement(registeredComponents[cmp.type], _.extend({}, cmp.props, {key}))
             )
           }
         </Entity>
