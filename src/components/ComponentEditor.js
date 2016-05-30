@@ -13,7 +13,11 @@ class ComponentEditor extends React.Component {
     const renderProp = (cur, prop, propName, propType) => {
       const objectProp = (cur, prop, propTypes) => (
         <ul>
-          {_.map(prop, (val, key) => <li>{key}: {renderProp(cur.refine(key), val, ''/*avoid nested propname false match*/, propTypes[key])}</li>)}
+          {_.map(prop, (val, key) =>
+            <li>
+              {key}: {renderProp(cur.refine(key), val, ''/*avoid nested propname false match*/, propTypes[key])}
+            </li>
+          )}
         </ul>
       );
 
@@ -55,9 +59,11 @@ class ComponentEditor extends React.Component {
         }}>
         <h1>Component Id: {selectedCmp.id}</h1>
         <ul>
-          {_.map(_.omit(selectedCmp.props, ['onLoaded']), (prop, propName) => <li>{propName}: {
-            renderProp(cur.refine('props', propName), prop, propName, propTypes && propTypes[propName])
-          }</li>)}
+          {_.map(_.omit(selectedCmp.props, ['onLoaded']), (prop, propName) =>
+            <li key={propName}>
+              {propName}: {renderProp(cur.refine('props', propName), prop, propName, propTypes && propTypes[propName])}
+            </li>
+          )}
         </ul>
       </div>
     );
