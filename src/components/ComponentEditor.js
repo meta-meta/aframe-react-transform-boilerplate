@@ -1,13 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
+import {ImmutableOptimizations} from 'react-cursor';
 
 class ComponentEditor extends React.Component {
-  
-  
+  shouldComponentUpdate = ImmutableOptimizations(['selectedComponentCursor']).shouldComponentUpdate.bind(this);
+
   render() {
     const {selectedComponentCursor: cur} = this.props;
     const selectedCmp = cur.value();
-    
+    const nameCur = cur.refine('name');
+
     const propTypes = registeredComponents[selectedCmp.type].propTypes;
 
     const renderProp = (cur, prop, propName, propType) => {
@@ -24,11 +26,11 @@ class ComponentEditor extends React.Component {
       const onChange = evt => {
         let {value} = evt.target;
 
-        if(React.PropTypes.number === propType) {
+        if (React.PropTypes.number === propType) {
           value = parseFloat(evt.target.value);
         }
 
-        if(value) {
+        if (value) {
           cur.set(value);
         }
       };
@@ -58,6 +60,7 @@ class ComponentEditor extends React.Component {
           zIndex: 1,
         }}>
         <h1>Component Id: {selectedCmp.id}</h1>
+        <input type="text" value={nameCur.value()} onChange={evt => nameCur.set(evt.target.value)}/>
         <ul>
           {_.map(_.omit(selectedCmp.props, ['onLoaded']), (prop, propName) =>
             <li key={propName}>

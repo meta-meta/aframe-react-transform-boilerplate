@@ -1,6 +1,7 @@
 export default {
   time: {},
   selectedCursorPath: undefined,
+  listComponents: false,
   leapMotion: {
     isVR: false,
     left: {
