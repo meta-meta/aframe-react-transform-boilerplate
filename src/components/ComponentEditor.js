@@ -10,10 +10,10 @@ const v3Prop = React.PropTypes.shape({
 });
 
 class ComponentEditor extends React.Component {
-  shouldComponentUpdate = ImmutableOptimizations(['selectedComponentCursor']).shouldComponentUpdate.bind(this);
+  shouldComponentUpdate = ImmutableOptimizations(['selectedComponentCursor'], ['selectedCursorPathCursor']).shouldComponentUpdate.bind(this);
 
   render() {
-    const {selectedComponentCursor: cur} = this.props;
+    const {selectedComponentCursor: cur, selectedCursorPathCursor: pathCur} = this.props;
     const selectedCmp = cur.value();
     const nameCur = cur.refine('name');
 
@@ -75,6 +75,7 @@ class ComponentEditor extends React.Component {
             </li>
           )}
         </ul>
+        <button onClick={() => pathCur.set(undefined)}>Close</button>
       </div>
     );
   }

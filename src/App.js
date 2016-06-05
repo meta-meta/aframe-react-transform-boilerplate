@@ -129,7 +129,9 @@ export class App extends Component {
         <ControlPanel cursor={cursor}/>
 
         {
-          selectedCmpCur ? <ComponentEditor selectedComponentCursor={selectedCmpCur}/> : null
+          selectedCmpCur ? <ComponentEditor selectedComponentCursor={selectedCmpCur}
+                                            selectedCursorPathCursor={cursor.refine('selectedCursorPath')}
+                            /> : null
         }
 
         {
