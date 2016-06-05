@@ -15,7 +15,7 @@ class ControlPanel extends React.Component {
 
   storeComponentObject3DId = (evt, id) => this.props.cursor.refine('panel', id).merge({object3DId: evt.target.object3D.id});
 
-  spawnComponent = (type) => {
+  spawnComponent = (type, props) => {
     const id = _.uniqueId();
     const {cursor} = this.props;
 
@@ -24,12 +24,12 @@ class ControlPanel extends React.Component {
         id,
         type,
         name: `${id}-${type}`,
-        props: {
+        props: _.assign({
           position: V3(),
           rotation: V3(),
           color: '#ffffff',
           onLoaded: evt => this.storeComponentObject3DId(evt, id),
-        }
+        }, props)
       }
     });
 
@@ -37,7 +37,7 @@ class ControlPanel extends React.Component {
 
   };
 
-  spawnPlane = () => this.spawnComponent('Plane');
+  spawnPlane = () => this.spawnComponent('Plane', {width: 1, height:1});
 
   toggleCmpList = () => this.props.cursor.refine('listComponents').swap(v => !v);
 
