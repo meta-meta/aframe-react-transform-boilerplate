@@ -55,7 +55,7 @@ class ControlPanel extends React.Component {
     return (
       <div style={{
           width: '100%',
-          height: 50,
+          height: 20,
           background: '#666',
           position: 'absolute',
           bottom: 0,
