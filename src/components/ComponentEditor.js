@@ -3,6 +3,12 @@ import _ from 'lodash';
 import {ImmutableOptimizations} from 'react-cursor';
 import NumberInput from './NumberInput';
 
+const v3Prop = React.PropTypes.shape({
+  x: React.PropTypes.number,
+  y: React.PropTypes.number,
+  z: React.PropTypes.number,
+});
+
 class ComponentEditor extends React.Component {
   shouldComponentUpdate = ImmutableOptimizations(['selectedComponentCursor']).shouldComponentUpdate.bind(this);
 
@@ -11,7 +17,10 @@ class ComponentEditor extends React.Component {
     const selectedCmp = cur.value();
     const nameCur = cur.refine('name');
 
-    const propTypes = registeredComponents[selectedCmp.type].propTypes;
+    const propTypes = _.assign({}, registeredComponents[selectedCmp.type].propTypes, {
+      position: v3Prop,
+      rotation: v3Prop,
+    });
 
     const renderProp = (cur, prop, propName, propType) => {
       const objectProp = (cur, prop, propTypes) => (
@@ -43,7 +52,7 @@ class ComponentEditor extends React.Component {
       };
 
       return propRenderer ? propRenderer()
-        : _.isObject(prop) ? objectProp(cur, prop, window.v3Prop === propType ? v3PropTypes : {})
+        : _.isObject(prop) ? objectProp(cur, prop, v3Prop === propType ? v3PropTypes : {})
         : React.PropTypes.number === propType ? <NumberInput cursor={cur}/>
         : <input type="text" value={prop} onChange={onChange}/>
     };

@@ -1,19 +1,11 @@
 import {Entity} from 'aframe-react';
-import React from 'react';
-
-window.v3Prop = React.PropTypes.shape({
-    x: React.PropTypes.number,
-    y: React.PropTypes.number,
-    z: React.PropTypes.number,
-});
+import React, {PropTypes} from 'react';
 
 class Plane extends React.Component {
     static propTypes = {
-        position: v3Prop,
-        rotation: v3Prop,
-        width: React.PropTypes.number,
-        height: React.PropTypes.number,
-        color: React.PropTypes.string,
+        width: PropTypes.number,
+        height: PropTypes.number,
+        color: PropTypes.string,
     };
 
     static defaultProps = {

@@ -9,6 +9,7 @@ import ComponentEditor from './components/ComponentEditor';
 import ComponentList from './components/ComponentList';
 import Box from './components/Box';
 import LeapMotion from './components/LeapMotion';
+import Image from './components/Image';
 import Plane from './components/Plane';
 import SpaceNav from './components/SpaceNav';
 import _ from 'lodash';
@@ -22,7 +23,8 @@ export class App extends Component {
     super();
 
     window.registeredComponents = {
-      Plane
+      Plane,
+      Image
     };
   }
 

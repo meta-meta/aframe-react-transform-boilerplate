@@ -35,17 +35,17 @@ class ControlPanel extends React.Component {
         props: _.assign({
           position: V3(),
           rotation: V3(),
-          color: '#ffffff',
           onLoaded: evt => this.storeComponentObject3DId(evt, id),
         }, props)
       }
     });
 
     cursor.refine('selectedCursorPath').set(['panel', id]);
-
   };
 
-  spawnPlane = () => this.spawnComponent('Plane', {width: 1, height:1});
+  spawnPlane = () => this.spawnComponent('Plane', {width: 1, height:1, color: '#ffffff'});
+  
+  spawnImage = () => this.spawnComponent('Image', {url: '', pixelsPerMeter: 1000});
 
   toggleCmpList = () => this.props.cursor.refine('listComponents').swap(v => !v);
 
@@ -64,6 +64,7 @@ class ControlPanel extends React.Component {
         <button onClick={this.toggleCmpList}>List Cmps</button>
         <button onClick={this.printPanel}>Print Panel Cfg</button>
         <button onClick={this.spawnPlane}>Plane</button>
+        <button onClick={this.spawnImage}>Image</button>
         <input type="text" placeholder="paste panel JSON" onChange={evt => this.loadPanelsFromJSON(evt.target.value)}/>
       </div>
     );
