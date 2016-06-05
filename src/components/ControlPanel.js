@@ -6,12 +6,20 @@ class ControlPanel extends React.Component {
     return false;
   }
 
-  loadPanelsFromJSON = json => this.props.cursor.refine('panel').set(JSON.parse(json, (key, val) => {
-    if (key === 'position' || key === 'rotation') {
-      return objToV3(val);
-    }
-    return val;
-  }));
+  loadPanelsFromJSON = json => {
+    const parsedData = JSON.parse(json, (key, val) => {
+      if (key === 'position' || key === 'rotation') {
+        return objToV3(val);
+      }
+      return val;
+    });
+
+    // hack to continue generating unique IDs where we left off
+    const largestId = parseInt(_(parsedData).keys().orderBy().last());
+    _.each(_.range(largestId), () => _.uniqueId());
+
+    this.props.cursor.refine('panel').set(parsedData);
+  };
 
   storeComponentObject3DId = (evt, id) => this.props.cursor.refine('panel', id).merge({object3DId: evt.target.object3D.id});
 
