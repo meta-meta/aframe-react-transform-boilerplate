@@ -1,16 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import Plane from './Plane';
 
 class ControlPanel extends React.Component {
-  constructor() {
-    super();
-
-    window.registeredComponents = {
-      Plane
-    };
-  }
-
   shouldComponentUpdate() {
     return false;
   }

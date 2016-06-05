@@ -9,6 +9,7 @@ import ComponentEditor from './components/ComponentEditor';
 import ComponentList from './components/ComponentList';
 import Box from './components/Box';
 import LeapMotion from './components/LeapMotion';
+import Plane from './components/Plane';
 import SpaceNav from './components/SpaceNav';
 import _ from 'lodash';
 import {hslToHex} from './util/colorConversion';
@@ -17,6 +18,14 @@ const WORLD = 'WORLD';
 const LOCAL = 'LOCAL';
 
 export class App extends Component {
+  constructor() {
+    super();
+
+    window.registeredComponents = {
+      Plane
+    };
+  }
+
   onTick = (t, dt) => {
     const {cursor} = this.props;
     cursor.refine('time').set({t, dt});
@@ -63,8 +72,6 @@ export class App extends Component {
     const trans = spaceNavCur.refine('translate').value();
     const rot = spaceNavCur.refine('rotate').value();
 
-    const boxCur = cursor.refine('box');
-
     const {x, y, pressure, azimuth, altitude, isEraser} = wintabCur.value();
     const selectedCmpCur = this.getSelectedCmpCursor();
 
@@ -104,7 +111,7 @@ export class App extends Component {
         <Entity position="0 0 -5">
           {
             _.map(panel, (cmp, key) =>
-              React.createElement(registeredComponents[cmp.type], _.extend({}, cmp.props, {key}))
+              React.createElement(registeredComponents[cmp.type], _.assign({}, cmp.props, {key}))
             )
           }
         </Entity>
