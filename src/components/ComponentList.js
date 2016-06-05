@@ -28,6 +28,23 @@ class ComponentList extends React.Component {
     panelCur.set(_.omit(panelCur.value(), id));
   };
 
+  cloneCmp = (sourceId) => {
+    const {cursor} = this.props;
+    const panelCur = cursor.refine('panel');
+    const id = _.uniqueId();
+
+    const source = panelCur.refine(sourceId).value();
+
+    const newObj = _.assign(_.cloneDeep(source), {
+      id,
+      name: source.name + '(cloned)'
+    });
+
+    panelCur.merge({[id]: newObj});
+
+    cursor.refine('selectedCursorPath').set(['panel', id]);
+  };
+
   render() {
     const cur = this.props.cursor.refine('panel');
     return (
@@ -45,6 +62,7 @@ class ComponentList extends React.Component {
             <li key={id}>
               <span onClick={() => this.selectCmp(id)}>{cmp.name}</span>
               <button onClick={() => this.deleteCmp(id)}>delete</button>
+              <button onClick={() => this.cloneCmp(id)}>clone</button>
             </li>
           )}
         </ul>
