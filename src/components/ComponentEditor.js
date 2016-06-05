@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import {ImmutableOptimizations} from 'react-cursor';
+import NumberInput from './NumberInput';
 
 class ComponentEditor extends React.Component {
   shouldComponentUpdate = ImmutableOptimizations(['selectedComponentCursor']).shouldComponentUpdate.bind(this);
@@ -26,10 +27,6 @@ class ComponentEditor extends React.Component {
       const onChange = evt => {
         let {value} = evt.target;
 
-        if (React.PropTypes.number === propType) {
-          value = parseFloat(evt.target.value);
-        }
-
         if (value) {
           cur.set(value);
         }
@@ -47,6 +44,7 @@ class ComponentEditor extends React.Component {
 
       return propRenderer ? propRenderer()
         : _.isObject(prop) ? objectProp(cur, prop, window.v3Prop === propType ? v3PropTypes : {})
+        : React.PropTypes.number === propType ? <NumberInput cursor={cur}/>
         : <input type="text" value={prop} onChange={onChange}/>
     };
 
