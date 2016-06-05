@@ -69,7 +69,7 @@ export class App extends Component {
     const leapCur = cursor.refine('leapMotion');
     const spaceNavCur = cursor.refine('spaceNav');
     const wintabCur = cursor.refine('wintab');
-    const {panel, listComponents} = cursor.value();
+    const {panel, listComponents, showControllers} = cursor.value();
 
     const trans = spaceNavCur.refine('translate').value();
     const rot = spaceNavCur.refine('rotate').value();
@@ -89,25 +89,31 @@ export class App extends Component {
           <LeapMotion cursor={leapCur} />
 
           {/*SpaceNav*/}
-          <Entity position="-3 -2 -5">
-            <Box position={trans.toAframeString()}
-                 rotation={rot.toAframeString()}
-                 width={0.2}
-                 height={0.2}
-                 depth={0.2}
-            />
-          </Entity>
+          {
+            showControllers ? <Entity position="-1.5 -1.5 -2">
+              <Box position={trans.toAframeString()}
+                   rotation={rot.toAframeString()}
+                   width={0.2}
+                   height={0.2}
+                   depth={0.2}
+              />
+            </Entity> : null
+          }
+
 
         </Camera>
 
         {/*Stylus*/}
-        <Entity position="0 0 -5">
-          <Entity position={`${x / 600} 0 ${y / 600}`}
-                  rotation={`${altitude - 90} ${-azimuth} 0`}>
-            <Box position="0 0.5 0" width={0.04} height={1} depth={0.04}/>
-            <Box width={0.05} height={0.05} depth={0.05} color={isEraser ? '#000' : hslToHex(0, pressure, 0.5 + pressure / 2)} />
-          </Entity>
-        </Entity>
+        {
+          showControllers ? <Entity position="0 0 -5">
+            <Entity position={`${x / 600} 0 ${y / 600}`}
+                    rotation={`${altitude - 90} ${-azimuth} 0`}>
+              <Box position="0 0.5 0" width={0.04} height={1} depth={0.04}/>
+              <Box width={0.05} height={0.05} depth={0.05} color={isEraser ? '#000' : hslToHex(0, pressure, 0.5 + pressure / 2)} />
+            </Entity>
+          </Entity> : null
+        }
+
 
         {/*Panel from editor state*/}
         <Entity position="0 0 -5">

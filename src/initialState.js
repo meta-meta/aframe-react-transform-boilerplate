@@ -1,5 +1,6 @@
 export default {
   time: {},
+  showControllers: false,
   selectedCursorPath: undefined,
   listComponents: false,
   leapMotion: {
