@@ -60,7 +60,7 @@ class ComponentEditor extends React.Component {
     return (
       <div style={{
           width: 300,
-          height: '100%',
+          height: '70%',
           background: '#666',
           position: 'absolute',
           right: 0,
