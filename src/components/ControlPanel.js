@@ -2,8 +2,28 @@ import React from 'react';
 import _ from 'lodash';
 
 class ControlPanel extends React.Component {
-  shouldComponentUpdate() {
-    return false;
+  shouldComponentUpdate(nextProps) {
+    const nextCursor = nextProps.cursor;
+    const nextCursorVal = nextCursor.value();
+
+    const {recordStatePath, recordingName, isRecording, recordings, playback, playbackFrame} = nextCursorVal;
+    const frameOfState = recordStatePath && this.props.cursor.refine.apply(null, recordStatePath).value();
+
+    if(isRecording) {
+      //TODO: diff state and save only the changes
+      const recordingCur = nextProps.cursor.refine('recordings', recordingName, 'data');
+      recordingCur.push([frameOfState]);
+    }
+
+    if(playback) {
+      const {data, path} = recordings[playback];
+      const frame = data[playbackFrame % data.length];
+      nextCursor.refine.apply(null, path).set(frame);
+      nextCursor.refine('playbackFrame').set(playbackFrame + 1);
+    }
+
+    const propsOfInterest = ['isRecording', 'recordStatePath', 'recordingName'];
+    return !_.isEqual(_.pick(nextCursorVal, propsOfInterest), _.pick(this.props.cursor.value(), propsOfInterest));
   }
 
   loadPanelsFromJSON = json => {
@@ -51,7 +71,24 @@ class ControlPanel extends React.Component {
 
   printPanel = () => console.log(JSON.stringify(this.props.cursor.refine('panel').value()));
 
+  recState = () => {
+    const {cursor} = this.props;
+    const {isRecording, recordingName, recordStatePath} = cursor.value();
+
+    if(!isRecording) {
+      cursor.refine('recordings').merge({[recordingName]: {path: recordStatePath, data: []}});
+    }
+
+    this.props.cursor.refine('isRecording').swap(v => !v);
+  };
+
   render() {
+    const {cursor} = this.props;
+    const {isRecording, recordings} = cursor.value();
+    const recordStatePath = cursor.refine('recordStatePath');
+    const recordingName = cursor.refine('recordingName');
+    const playback = cursor.refine('playback');
+
     return (
       <div style={{
           width: '100%',
@@ -66,6 +103,14 @@ class ControlPanel extends React.Component {
         <button onClick={this.spawnPlane}>Plane</button>
         <button onClick={this.spawnImage}>Image</button>
         <input type="text" placeholder="paste panel JSON" onChange={evt => this.loadPanelsFromJSON(evt.target.value)}/>
+        <input type="text" placeholder="recording name" onChange={evt => recordingName.set(evt.target.value)}/>
+        <input type="text" placeholder="state.path"
+               onChange={evt => recordStatePath.set(evt.target.value.split('.'))}
+        />
+        <button onClick={this.recState} disabled={!recordingName.value()}>{isRecording ? 'Stop' : 'Rec'}</button>
+        <select value={playback.value()} onChange={evt => playback.set(evt.target.value)}>
+          {[undefined].concat(_.keys(recordings)).map(recordingName => <option value={recordingName}>{recordingName}</option>)}
+        </select>
       </div>
     );
   }

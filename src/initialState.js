@@ -3,6 +3,12 @@ export default {
   showControllers: false,
   selectedCursorPath: undefined,
   listComponents: false,
+  recordStatePath: undefined,
+  recordingName: undefined,
+  isRecording: false,
+  recordings: {},
+  playback: undefined,
+  playbackFrame: 0,
   leapMotion: {
     isVR: false,
     left: {
