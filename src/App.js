@@ -14,6 +14,7 @@ import Plane from './components/Plane';
 import SpaceNav from './components/SpaceNav';
 import _ from 'lodash';
 import {hslToHex} from './util/colorConversion';
+import {ImmutableOptimizations} from 'react-cursor';
 
 const WORLD = 'WORLD';
 const LOCAL = 'LOCAL';
@@ -27,6 +28,8 @@ export class App extends Component {
       Image
     };
   }
+
+  shouldComponentUpdate = ImmutableOptimizations(['time'], ['cursor']).shouldComponentUpdate.bind(this);
 
   onTick = (t, dt) => {
     const {cursor} = this.props;

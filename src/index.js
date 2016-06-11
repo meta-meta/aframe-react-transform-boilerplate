@@ -9,7 +9,7 @@ window.stateAtom = atom.createAtom(initialState);
 
 const queueRender = (key, ref, prevVal, curVal) => {
   var cur = window.cursor = Cursor.build(stateAtom.deref(), stateAtom.swap);
-  window.app = render(<App cursor={cur}/>, document.getElementById('root'));
+  window.app = render(<App cursor={cur} time={cur.refine('time')}/>, document.getElementById('root'));
 };
 
 stateAtom.addWatch('react-renderer', queueRender);
