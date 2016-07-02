@@ -72,7 +72,7 @@ export class App extends Component {
     const leapCur = cursor.refine('leapMotion');
     const spaceNavCur = cursor.refine('spaceNav');
     const wintabCur = cursor.refine('wintab');
-    const {panel, listComponents, showControllers} = cursor.value();
+    const {panel, listComponents, viewInspector, showControllers} = cursor.value();
 
     const trans = spaceNavCur.refine('translate').value();
     const rot = spaceNavCur.refine('rotate').value();
@@ -132,7 +132,7 @@ export class App extends Component {
         <ControlPanel cursor={cursor}/>
 
         {
-          selectedCmpCur ? <ComponentEditor selectedComponentCursor={selectedCmpCur}
+          viewInspector && selectedCmpCur ? <ComponentEditor selectedComponentCursor={selectedCmpCur}
                                             selectedCursorPathCursor={cursor.refine('selectedCursorPath')}
                             /> : null
         }

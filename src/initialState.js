@@ -3,6 +3,7 @@ export default {
   showControllers: false,
   selectedCursorPath: undefined,
   listComponents: false,
+  viewInspector: false,
   recordStatePath: undefined,
   recordingName: undefined,
   isRecording: false,

@@ -68,6 +68,8 @@ class ControlPanel extends React.Component {
   spawnImage = () => this.spawnComponent('Image', {url: '', pixelsPerMeter: 1000});
 
   toggleCmpList = () => this.props.cursor.refine('listComponents').swap(v => !v);
+  
+  toggleInsp = () => this.props.cursor.refine('viewInspector').swap(v => !v);
 
   printPanel = () => console.log(JSON.stringify(this.props.cursor.refine('panel').value()));
 
@@ -99,6 +101,7 @@ class ControlPanel extends React.Component {
           zIndex: 1,
         }}>
         <button onClick={this.toggleCmpList}>List Cmps</button>
+        <button onClick={this.toggleInspector}>Insp</button>
         <button onClick={this.printPanel}>Print Panel Cfg</button>
         <button onClick={this.spawnPlane}>Plane</button>
         <button onClick={this.spawnImage}>Image</button>
